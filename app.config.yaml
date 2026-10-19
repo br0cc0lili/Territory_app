@@ -1,0 +1,81 @@
+application:
+  actions: actions
+  web: web-src
+  runtimeManifest:
+    packages:
+      territory-app:
+        license: Apache-2.0
+        actions:
+          generate-asset:
+            function: actions/generate-asset/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          publish-events:
+            function: actions/publish-events/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+              apiKey: $SERVICE_API_KEY
+            annotations:
+              require-adobe-auth: true
+              final: true
+          # ---- Image Extension (InDesign plugin → Firefly Generative Expand) ----
+          # STAGE PROTOTYPE: require-adobe-auth is false because the UXP plugin has
+          # no Adobe user token; each action checks the x-plugin-key header against
+          # PLUGIN_SHARED_KEY instead. That key is client-side config — a request
+          # gate, NOT a secret, NOT production auth. Replace before Production.
+          # include-ims-credentials injects this workspace's OAuth Server-to-Server
+          # credential (params.__ims_oauth_s2s) for Core.AuthClient — no Firefly
+          # secret in .env.
+          get-upload-url:
+            function: actions/get-upload-url/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              final: true
+          expand-image:
+            function: actions/expand-image/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              include-ims-credentials: true
+              final: true
+            limits:
+              timeout: 120000
+              memory: 1024
+          expand-status:
+            function: actions/expand-status/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              include-ims-credentials: true
+              final: true
+          firefly-auth-check:
+            function: actions/firefly-auth-check/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              include-ims-credentials: true
+              final: true
