@@ -79,3 +79,39 @@ application:
               require-adobe-auth: false
               include-ims-credentials: true
               final: true
+          # ---- Center Subject (InDesign plugin -> Photoshop API remove-background mask) ----
+          subject-upload-url:
+            function: actions/subject-upload-url/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              final: true
+          subject-mask:
+            function: actions/subject-mask/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              include-ims-credentials: true
+              final: true
+            limits:
+              timeout: 120000
+              memory: 1024
+          subject-status:
+            function: actions/subject-status/index.js
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: info
+              PLUGIN_SHARED_KEY: $PLUGIN_SHARED_KEY
+            annotations:
+              require-adobe-auth: false
+              include-ims-credentials: true
+              final: true
